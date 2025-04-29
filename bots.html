@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Order Tracking AiBot</title>
   <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+  <button id="logoutBtn" class="side-button">Logout</button>
+
   <style>
     /* Base Styles */
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
@@ -131,6 +133,27 @@
 
   box-shadow: 0 0 15px rgba(51, 187, 255, 0.6);
 }
+.side-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 10px 18px;
+  background: linear-gradient(135deg, #33bbff, #007bff);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 0 10px rgba(51, 187, 255, 0.4);
+  transition: background-color 0.3s;
+}
+
+.side-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(51, 187, 255, 0.6);
+}
+
 
   </style>
 </head>
@@ -155,6 +178,7 @@
     <button id="voice-command" title="Speak">&#127908;</button>
     <input type="file" id="image-upload" accept="image/*" style="display: none;">
     <button id="upload-btn" title="Upload Image">&#128247;</button>
+
   </div>
 
   <div class="footer">&copy; 2025 Smart Orders Inc.</div>
@@ -163,6 +187,42 @@
   <audio id="sendSound" src="https://www.soundjay.com/button/sounds/button-16.mp3"></audio>
 
   <script>
+    
+if (!localStorage.getItem("user")) {
+  window.location.href = "login.html";
+}
+document.getElementById("logoutBtn").addEventListener("click", function () {
+    localStorage.removeItem("user");
+    window.location.href = "login.html";
+  });
+
+
+    const dataset = Array.from({ length: 120 }, (_, i) => {
+      const names = ["Alice Johnson", "Bob Smith", "Carlos Rivera", "Diana Chen", "Ethan Patel", "Fatima Ahmed"];
+      const products = ["Smartphone", "Laptop", "Headphones", "Watch", "Camera", "Backpack"];
+      return {
+        orderId: `ORD${10000 + i}`,
+        name: names[i % names.length],
+        item: products[i % products.length],
+        status: ["Processing", "Shipped", "Out for Delivery", "Delivered"][i % 4],
+        expected: `2025-05-${String(1 + (i % 28)).padStart(2, '0')}`
+      };
+    });
+    function getBotResponse(input) {
+      const idMatch = input.match(/ORD\d{5}/i);
+      if (idMatch) {
+        const order = dataset.find(o => o.orderId.toLowerCase() === idMatch[0].toLowerCase());
+        if (order) {
+          return `Order ${order.orderId} for ${order.item} (${order.name}) is currently '${order.status}'. Expected delivery: ${order.expected}.`;
+        } else {
+          return `Sorry, we couldn't find any order with ID ${idMatch[0]}.`;
+        }
+      }
+      if (input.toLowerCase().includes('order')) {
+        return 'Please provide your Order ID in format like ORD10001.';
+      }
+      return "I'm here to help with your orders! Ask me about a specific order by ID (e.g., ORD10001).";
+    }
     const promptInput = document.querySelector("#prompt");
     const submitBtn = document.querySelector("#submit");
     const chatContainer = document.querySelector(".chat-container");
