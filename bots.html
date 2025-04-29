@@ -6,231 +6,148 @@
   <title>Order Tracking AiBot</title>
   <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    }
+    /* Base Styles */
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
     body {
       background: #0d0c1d;
       color: #eee;
       height: 100vh;
-      overflow: hidden;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      padding-top: 40px;
       text-align: center;
       transition: background 0.5s, color 0.5s;
+      overflow: hidden;
     }
-    body.light-mode {
-      background: #f5f5f5;
-      color: #111;
-    }
-
+    body.light-mode { background: #f5f5f5; color: #111; }
+    /* Welcome screen */
     #welcome {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #473ec9;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      z-index: 1000;
+      flex-direction: column;
+      z-index: 9999;
       color: #fff;
-      font-size: 24px;
-      animation: fadeout 3s forwards 3s;
+      font-size: 64px;
+      font-weight: bold;
+      animation: fadeOut 2s 2s forwards;
     }
-    @keyframes fadeout {
+    @keyframes fadeOut {
       to { opacity: 0; visibility: hidden; }
     }
-    #welcome h1 {
-      font-size: 50px;
-      margin-bottom: 10px;
-      animation: floatUp 2s ease;
-    }
-    @keyframes floatUp {
-      from { transform: translateY(50px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    #tsparticles {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-    }
     .chatbot-sticker {
-      width: 70px;
-      height: 70px;
-      background: url("https://cdn-icons-png.flaticon.com/512/4712/4712035.png") no-repeat center center;
-      background-size: cover;
-      position: fixed;
-      bottom: 100px;
-      right: 30px;
-      z-index: 10;
-      animation: floaty 3s ease-in-out infinite;
-    }
-    @keyframes floaty {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
+  width: 80px;
+  height: 80px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  position: fixed;
+  bottom: 100px;
+  left: 50px;
+  z-index: 10;
+  animation: floaty 3s ease-in-out infinite;
+  transition: opacity 0.6s ease-in-out;
+  opacity: 1;
+}
+
+    @keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
     .title {
-      font-size: 32px;
-      font-weight: 700;
-      background: linear-gradient(45deg, #d000ff, #7700ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      font-size: 46px; font-weight: 700;
+      background: linear-gradient(45deg,#33bbff, #007bff);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       margin-bottom: 6px;
     }
-    .subtitle {
-      font-size: 14px;
-      color: #b699ff;
-      margin-bottom: 18px;
-    }
+    .subtitle { font-size: 20px; color: #007bff; margin-bottom: 18px; }
     .chat-container {
-      width: 90%;
-      max-width: 700px;
-      height: 60vh;
+      width: 90%; max-width: 700px; height: 40vh;
       background: rgba(255, 255, 255, 0.03);
       backdrop-filter: blur(10px);
-      border-radius: 20px;
-      padding: 20px;
+      border-radius: 20px; padding: 20px;
       box-shadow: 0 0 25px rgba(170, 0, 255, 0.2);
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
+      overflow-y: auto; display: flex; flex-direction: column; gap: 15px;
       transition: background 0.5s;
     }
-    body.light-mode .chat-container {
-      background: rgba(0, 0, 0, 0.03);
-      box-shadow: 0 0 25px rgba(0, 0, 0, 0.1);
-    }
-    .chat-box {
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
+    body.light-mode .chat-container { background: rgba(0,0,0,0.03); box-shadow: 0 0 25px rgba(0,0,0,0.1); }
+    .chat-box { display: flex; flex-direction: column; }
     .chat-bubble {
-      padding: 14px 20px;
-      border-radius: 20px;
-      font-size: 15px;
-      max-width: 75%;
-      word-wrap: break-word;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
-      position: relative;
-      transition: background 0.3s;
+      padding: 14px 20px; border-radius: 20px; font-size: 15px;
+      max-width: 75%; word-wrap: break-word;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.5); position: relative;
     }
-    .chat-bubble img {
-      max-width: 100%;
-      border-radius: 15px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      margin-top: 5px;
-    }
+    .chat-bubble img { max-width: 100%; border-radius: 15px; margin-top: 5px; }
     .chat-bubble::after {
-      content: attr(data-time);
-      font-size: 10px;
-      color: #aaa;
-      position: absolute;
-      bottom: -16px;
-      right: 0;
+      content: attr(data-time); font-size: 10px; color: #2a576a;
+      position: relative; bottom: -12px; right: 5;
     }
     .user-chat {
-      align-self: flex-end;
-      background: linear-gradient(135deg, #2d0b52, #a03dff);
-      color: #fff;
-    }
-    .ai-chat {
-      align-self: flex-start;
-      background: linear-gradient(135deg, #5500a3, #a300ff);
-      color: #fff;
-    }
-    .speak-btn {
-      background: transparent;
-      border: none;
-      color: #ffcc00;
-      font-size: 20px;
-      cursor: pointer;
-      margin-top: 5px;
-      align-self: flex-start;
-    }
+      align-self:flex-end;
+  background: linear-gradient(135deg, #007bff, #33bbff);
+  color: #fff;
+}
+.ai-chat {
+  align-self: flex-start;
+  background: linear-gradient(135deg, #3399ff, #66ccff);
+  color: #003366;
+}
     .prompt-area {
-      margin-top: 20px;
-      display: flex;
-      width: 90%;
-      max-width: 700px;
-      gap: 10px;
+      margin-top: 20px; display: flex; width: 90%; max-width: 700px; gap: 10px;
     }
     .prompt-area input[type="text"] {
-      flex-grow: 1;
-      padding: 14px 18px;
-      border: none;
-      border-radius: 30px;
-      font-size: 15px;
-      background: #1e1e2f;
-      color: #eee;
+      flex-grow: 1; padding: 14px 18px; border: none;
+      border-radius: 30px; font-size: 15px;
+      background: #1e1e2f; color: #eee;
     }
     .prompt-area button {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      border: none;
-      background: linear-gradient(135deg, #a300ff, #5700b3);
-      color: white;
-      font-size: 20px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: transform 0.2s ease;
+      width: 50px; height: 50px; border-radius: 50%; border: none;
+      background: linear-gradient(135deg, #33bbff, #007bff);
+      color: white; font-size: 20px; font-weight: bold;
+      cursor: pointer; transition: transform 0.2s ease;
     }
-    .prompt-area button:hover {
-      transform: scale(1.1);
-      box-shadow: 0 0 10px #a300ff;
-    }
-    .footer, .registration {
-      margin-top: 10px;
-      font-size: 12px;
-      color: #888;
-    }
-    .registration {
-      color: #aa88ff;
-    }
+    .prompt-area button:hover { transform: scale(1.1); box-shadow: 0 0 10px #33bbff; }
+    .footer, .registration { margin-top: 10px; font-size: 12px; color: #888; }
+    .registration { color: #007bff; }
     #theme-toggle {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      padding: 10px 18px;
-      border: none;
-      border-radius: 30px;
-      background: linear-gradient(135deg, #ff0080, #7928ca);
-      color: white;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-      transition: background 0.5s, transform 0.2s;
-    }
-    #theme-toggle:hover {
-      transform: scale(1.05);
-      background: linear-gradient(135deg, #7928ca, #ff0080);
-    }
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #33bbff, #007bff);
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(51, 187, 255, 0.4);
+  transition: all 0.3s ease;
+}
+
+#theme-toggle:hover {
+  transform: scale(1.1);
+
+  box-shadow: 0 0 15px rgba(51, 187, 255, 0.6);
+}
+
   </style>
 </head>
 <body>
-  <div id="welcome">
-    <h1>Welcome to AiBot!</h1>
-    <p>Loading your personal order assistant...</p>
-  </div>
+
+  <div id="welcome">Welcome to Order Tracking AiBot!</div>
 
   <div id="tsparticles"></div>
   <div class="chatbot-sticker"></div>
   <div class="title">Order Tracking AiBot</div>
   <div class="subtitle">Track orders with AI flair ✨</div>
 
-  <button id="theme-toggle">Switch Theme</button>
+  <button id="theme-toggle">Light Mode</button>
 
   <div class="chat-container"></div>
+  <div class="chatbot-sticker"></div>
+
 
   <div class="prompt-area">
     <input type="text" id="prompt" placeholder="Enter your order ID or question..." />
@@ -241,15 +158,16 @@
   </div>
 
   <div class="footer">&copy; 2025 Smart Orders Inc.</div>
-  <div class="registration">
-    Tanuj Mann - Reg: 12310347 - Roll: 33 |
-  </div>
+  <div class="registration">Tanuj Mann - Reg: 12310347 - Roll: 33 |</div>
+
+  <audio id="sendSound" src="https://www.soundjay.com/button/sounds/button-16.mp3"></audio>
 
   <script>
     const promptInput = document.querySelector("#prompt");
     const submitBtn = document.querySelector("#submit");
     const chatContainer = document.querySelector(".chat-container");
     const themeBtn = document.getElementById("theme-toggle");
+    const sendSound = document.getElementById("sendSound");
     const voiceBtn = document.getElementById("voice-command");
     const uploadBtn = document.getElementById("upload-btn");
     const imageUploadInput = document.getElementById("image-upload");
@@ -260,83 +178,81 @@
       const now = new Date();
       return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
+    // Function to detect if a query is order-related
+function isOrderRelated(input) {
+  const orderKeywords = ['order', 'track', 'status', 'delivery', 'shipping', 'shipment', 'cart', 'purchase','name','amazon','email'];
+  const userInput = input.toLowerCase();
 
-    function createSpeakButton(text) {
-      const btn = document.createElement('button');
-      btn.textContent = "🔊";
-      btn.classList.add('speak-btn');
-      btn.onclick = () => {
-        const utterance = new SpeechSynthesisUtterance(text);
-        speechSynthesis.speak(utterance);
-      };
-      return btn;
+  // Check if any order-related keyword is in the user's input
+  return orderKeywords.some(keyword => userInput.includes(keyword));
+}
+
+
+    function speak(text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1; utterance.pitch = 1;
+      speechSynthesis.speak(utterance);
     }
 
     async function generateResponse(userMessage) {
-      const aiChatBox = document.createElement("div");
-      aiChatBox.classList.add("chat-box");
+  const aiChatBox = document.createElement("div");
+  aiChatBox.classList.add("chat-box");
+  const aiBubble = document.createElement("div");
+  aiBubble.classList.add("chat-bubble", "ai-chat");
+  aiBubble.textContent = "Typing...";
+  aiBubble.setAttribute("data-time", getTime());
+  aiChatBox.appendChild(aiBubble);
+  chatContainer.appendChild(aiChatBox);
+  aiBubble.scrollIntoView({behavior: "smooth"});
 
-      const aiBubble = document.createElement("div");
-      aiBubble.classList.add("chat-bubble", "ai-chat");
-      aiBubble.textContent = "Typing...";
-      aiBubble.setAttribute("data-time", getTime());
-
-      aiChatBox.appendChild(aiBubble);
-      chatContainer.appendChild(aiChatBox);
-      chatContainer.scrollTop = chatContainer.scrollHeight;
-
-      const requestBody = {
-        contents: [
-          { role: "user", parts: [{ text: userMessage }] }
-        ],
-        system_instruction: {
-          role: "system",
-          parts: [{ text: "You are an AI assistant for order tracking. Help customers track orders, delivery times, shipping details, and order history." }]
-        }
-      };
-
-      try {
-        const response = await fetch(Api_Url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(requestBody),
-        });
-        const data = await response.json();
-        const reply = data.candidates[0].content.parts[0].text;
-        aiBubble.textContent = reply;
-        aiChatBox.appendChild(createSpeakButton(reply));
-      } catch (error) {
-        aiBubble.textContent = "Unable to retrieve order details. Please try again.";
+  // Check if the user's message is order-related
+  if (isOrderRelated(userMessage)) {
+    const requestBody = {
+      contents: [{ role: "user", parts: [{ text: userMessage }] }],
+      system_instruction: {
+        role: "system",
+        parts: [{ text: "You are an AI assistant for an order tracking service. Help customers track orders, delivery times, shipping details, and order history." }]
       }
+    };
 
-      chatContainer.scrollTop = chatContainer.scrollHeight;
+    try {
+      const response = await fetch(Api_Url, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody)
+      });
+      const data = await response.json();
+      const reply = data.candidates[0].content.parts[0].text;
+      aiBubble.textContent = reply;
+      speak(reply);
+    } catch (error) {
+      aiBubble.textContent = "Unable to retrieve order details. Please try again.";
     }
+  } else {
+    // If the input is not order-related, give a default response
+    aiBubble.textContent = "Sorry, I can only assist with order-related questions. Please ask about your order status, delivery, etc.";
+  }
+}
+
 
     function handleUserMessage() {
       const userMessage = promptInput.value.trim();
       if (!userMessage) return;
-
+      sendSound.play();
       const userChatBox = document.createElement("div");
       userChatBox.classList.add("chat-box");
-
       const userBubble = document.createElement("div");
       userBubble.classList.add("chat-bubble", "user-chat");
       userBubble.textContent = userMessage;
       userBubble.setAttribute("data-time", getTime());
-
       userChatBox.appendChild(userBubble);
       chatContainer.appendChild(userChatBox);
-      chatContainer.scrollTop = chatContainer.scrollHeight;
-
+      userBubble.scrollIntoView({behavior: "smooth"});
       promptInput.value = "";
       generateResponse(userMessage);
     }
 
-    promptInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") handleUserMessage();
-    });
+    promptInput.addEventListener("keydown", (e) => { if (e.key === "Enter") handleUserMessage(); });
     submitBtn.addEventListener("click", handleUserMessage);
-
     themeBtn.addEventListener("click", () => {
       document.body.classList.toggle("light-mode");
       loadParticles();
@@ -353,20 +269,117 @@
           move: { enable: true, speed: 1 },
           size: { value: 3 },
         },
-        background: {
-          color: isDark ? "#0d0c1d" : "#f5f5f5",
-        },
+        background: { color: isDark ? "#0d0c1d" : "#f5f5f5" },
       });
     }
-
     loadParticles();
 
-    window.addEventListener("load", () => {
-      setTimeout(() => {
-        document.getElementById("welcome").style.display = "none";
-        document.body.style.overflow = "auto";
-      }, 3500);
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+    if (recognition) {
+      recognition.continuous = false; recognition.lang = "en-US"; recognition.interimResults = false;
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        promptInput.value = transcript;
+        handleUserMessage();
+      };
+      voiceBtn.addEventListener("click", () => recognition.start());
+    } else {
+      voiceBtn.disabled = true;
+      voiceBtn.title = "Voice recognition not supported";
+    }
+
+    uploadBtn.addEventListener("click", () => imageUploadInput.click());
+    imageUploadInput.addEventListener("change", async () => {
+      const file = imageUploadInput.files[0];
+      if (!file) return;
+      const userChatBox = document.createElement("div");
+      userChatBox.classList.add("chat-box");
+      const userBubble = document.createElement("div");
+      userBubble.classList.add("chat-bubble", "user-chat");
+      userBubble.innerHTML = `<img src="${URL.createObjectURL(file)}" alt="Uploaded Image">`;
+      userBubble.setAttribute("data-time", getTime());
+      userChatBox.appendChild(userBubble);
+      chatContainer.appendChild(userChatBox);
+      userBubble.scrollIntoView({behavior: "smooth"});
+      generateImageResponse(file);
     });
+
+    async function generateImageResponse(file) {
+      const aiChatBox = document.createElement("div");
+      aiChatBox.classList.add("chat-box");
+      const aiBubble = document.createElement("div");
+      aiBubble.classList.add("chat-bubble", "ai-chat");
+      aiBubble.textContent = "Analyzing image...";
+      aiBubble.setAttribute("data-time", getTime());
+      aiChatBox.appendChild(aiBubble);
+      chatContainer.appendChild(aiChatBox);
+      aiBubble.scrollIntoView({behavior: "smooth"});
+
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64Image = reader.result.split(',')[1];
+        const requestBody = {
+          contents: [{ role: "user", parts: [{ inline_data: { mime_type: file.type, data: base64Image } }] }],
+          system_instruction: {
+            role: "system",
+            parts: [{ text: "You are an AI assistant for order tracking. Analyze uploaded images carefully and respond appropriately." }]
+          }
+        };
+        try {
+          const response = await fetch(Api_Url, {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(requestBody)
+          });
+          const data = await response.json();
+          const reply = data.candidates[0].content.parts[0].text;
+          aiBubble.textContent = reply;
+          speak(reply);
+        } catch (error) {
+          aiBubble.textContent = "Sorry, couldn't analyze the image.";
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  const stickerImages = [
+    "https://cdn-icons-png.flaticon.com/512/4712/4712033.png",
+    "https://cdn-icons-png.flaticon.com/512/1046/1046895.png",
+    "https://cdn-icons-png.flaticon.com/512/1170/1170576.png",
+    "https://cdn-icons-png.flaticon.com/512/2920/2920082.png",
+    "https://cdn-icons-png.flaticon.com/512/833/833472.png",
+    "https://cdn-icons-png.flaticon.com/512/3144/3144456.png", 
+    "https://cdn-icons-png.flaticon.com/512/679/679922.png",   
+    "https://cdn-icons-png.flaticon.com/512/4792/4792909.png", 
+    "https://cdn-icons-png.flaticon.com/512/190/190411.png",   
+  ];
+
+  let currentStickerIndex = 0;
+
+  function cycleStickers() {
+    const stickerEl = document.querySelector(".chatbot-sticker");
+    if (!stickerEl) return;
+
+    // Fade out
+    stickerEl.style.opacity = 0;
+
+    setTimeout(() => {
+      // Change image
+      stickerEl.style.backgroundImage = `url("${stickerImages[currentStickerIndex]}")`;
+      currentStickerIndex = (currentStickerIndex + 1) % stickerImages.length;
+
+      // Fade in
+      stickerEl.style.opacity = 1;
+    }, 300);
+  }
+
+  // Set the initial sticker and start the loop
+  document.addEventListener("DOMContentLoaded", () => {
+    const stickerEl = document.querySelector(".chatbot-sticker");
+    stickerEl.style.backgroundImage = `url("${stickerImages[0]}")`;
+    setInterval(cycleStickers, 5000);
+  });
+
   </script>
+
 </body>
 </html>
